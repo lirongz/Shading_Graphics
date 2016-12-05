@@ -25,14 +25,14 @@ vec2 computeTexCoords(vec3 R) {   //TODO: compute texture coordinates in cube ma
 	}
 
 //if(abs(R.z)>abs(R.x) && abs(R.z)> abs(R.y)) {
-		
+
 	//if(R.z >= 0.0){
 			//return vec2(3.5*s-0.5*s*R.x, 1.5*t-0.5*t*R.y);  // for positive_z surface
-		//return vec2(1);	
+		//return vec2(1);
 	//}
 	`	//return vec2(1.5*s+0.5*s*R.x, 1.5*t-0.5*t*R.y);      //for negative_z surface
 //}
-	
+
 	return vec2(0.0,0.0);
 }
 
