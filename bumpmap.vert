@@ -8,6 +8,7 @@ void main( void ) {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
 	gl_FrontColor = gl_Color;
 	N = gl_Normal;         // FixMe
+  //N=gl_ModelViewMatrix*gl_Normal;
 	tangentToEyeMatrix[0] = gl_NormalMatrix * attrTangent;
 	tangentToEyeMatrix[1] = gl_NormalMatrix * attrBitangent;
 	tangentToEyeMatrix[2] = gl_NormalMatrix * gl_Normal;
