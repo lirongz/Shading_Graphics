@@ -11,8 +11,8 @@ void main( void ) {
 	gl_FrontColor = gl_Color;
 	N = normalize(gl_NormalMatrix*gl_Normal);         // FixMe  Transfer Normals from model space to viewSpace
 	vec4 Position= vec4 (gl_ModelViewMatrix*gl_Vertex);
-	P=normalize(Position.xyz/Position.w);
-  	
+	P=Position.xyz/Position.w;
+  	//N=cross(attrTangent,attrBitangent);
 	tangentToEyeMatrix[0] = gl_NormalMatrix * attrTangent;
 	tangentToEyeMatrix[1] = gl_NormalMatrix * attrBitangent;  //
 	tangentToEyeMatrix[2] = gl_NormalMatrix * gl_Normal;  

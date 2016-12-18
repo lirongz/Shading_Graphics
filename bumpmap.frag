@@ -8,11 +8,18 @@ uniform bool ambient, diffuse, specular;
 varying vec3 P;
 
 //define the constant diaplcemant for the diatance between points 
-float displacement=0.0001;
+float displacement=0.0005;
 //define strength as the 
-float strength= 2500.0;
+int strength= 3200;
 
-//according to the given, heightFunction is used to calculate the he
+//uniform sampler2D bumpmap;
+		// Computes a normal from the height map. cross product of Px and Py, and name it as BiNormal
+	  //vec3 BiN=cross(tangentToEyeMatrix[0], tangentToEyeMatrix[1]);
+
+	   // Transforms the normal into eye space.
+	 // vec3 Neye= inverse(tangentToEyeMatrix)*BiN;
+
+ 	//according to the given, heightFunction is used to calculate the he
 float heightFunction(vec2 st){
 	float v=pow(mod(st.x,1)*2-1,2)+pow(mod(st.y,1)*2-1,2);
 		if(v<0.3){
@@ -29,8 +36,8 @@ vec3 getBumpedNormal(vec2 st) {
 	float z=heightFunction(st+vec2(-displacement,displacement));
 
 	//calculating two tangent based on the heights calculated above
-	vec3 v1=vec3(1,0 ,(y-x)*strength);
-	vec3 v2=vec3(0,1 ,(z-x)*strength);    
+	vec3 v1=vec3(1 , 0 ,(y-x)*strength);
+	vec3 v2=vec3(0 , 1 ,(z-x)*strength);    
    //the gradient of the height function according to the given
 	//vec3 N=vec3(-2*st.x, -2*st.y, 1);
 	//return N;
