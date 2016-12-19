@@ -8,7 +8,7 @@ uniform bool ambient, diffuse, specular;
 varying vec3 P;
 
 //define the constant diaplcemant for the diatance between points 
-float displacement=0.0005;
+float displacement=0.0001;
 //define strength as the 
 int strength= 3200;
 

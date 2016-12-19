@@ -6,13 +6,6 @@ varying mat3 tangentToEyeMatrix; // vertex shader output
 varying vec3 N;                  // fragment normal in eye space.
 uniform bool ambient, diffuse, specular;
 varying vec3 P;
-
-//define the constant diaplcemant for the diatance between points 
-float displacement=0.0005;
-//define strength as the 
-int strength= 3200;
-
-//uniform sampler2D bumpmap;
 		// Computes a normal from the height map. cross product of Px and Py, and name it as BiNormal
 	  //vec3 BiN=cross(tangentToEyeMatrix[0], tangentToEyeMatrix[1]);
 
@@ -20,30 +13,50 @@ int strength= 3200;
 	 // vec3 Neye= inverse(tangentToEyeMatrix)*BiN;
 
  	//according to the given, heightFunction is used to calculate the he
-float heightFunction(vec2 st){
+/*(float heightFunction(vec2 st){
 	float v=pow(mod(st.x,1)*2-1,2)+pow(mod(st.y,1)*2-1,2);
 		if(v<0.3){
 			return v;
 		}
     return 0.3;
-}
+}*/
 
 
 vec3 getBumpedNormal(vec2 st) {
-	//define points around point (s,t) according to the offset calculated by height_function
-	float x=heightFunction(st-vec2(displacement,displacement));
-	float y=heightFunction(st+vec2(displacement,-displacement));
-	float z=heightFunction(st+vec2(-displacement,displacement));
+	float dx=0.5;  //displacement for x
+	float dy=0.5;  //displacement for y
+   	float modFre=1.0/float(frequency);
+	vec3 bumpedNormal=N;
+	float f=frequency;
+	vec2 surfacePos=vec2(mod(st.s,modFre),mod(st.t,modFre));  //find the center of the circule based on frequency
+	//map the position within(0,1)
+	vec2 surfaceLocation=surfacePos*float(frequency); 
+    //check if the st is with the radius of the center, make the radius be 0.25
+	if(pow(surfaceLocation.x - 0.5,  2.0) + pow(surfaceLocation.y - 0.5, 2.0) < 0.0625){
+		float Px = 2.0 * (surfaceLocation.x - 0.5) * pow(2.0, float(frequency));   //calculate the derivative of the position
+		float Py = 2.0 * (surfaceLocation.y - 0.5) * pow(2.0, float(frequency));
+		vec3 Tangent=normalize(vec3(1.0,0.0,Px));  //compute new tangent
+		vec3 Bitangent=normalize(vec3(0.0,1.0,Py)); //compute the new Binormal
+		return tangentToEyeMatrix*(cross(Tangent,Bitangent));
+	}
+	return bumpedNormal;
+}
 
-	//calculating two tangent based on the heights calculated above
-	vec3 v1=vec3(1 , 0 ,(y-x)*strength);
-	vec3 v2=vec3(0 , 1 ,(z-x)*strength);    
-   //the gradient of the height function according to the given
-	//vec3 N=vec3(-2*st.x, -2*st.y, 1);
-	//return N;
-	return normalize(cross(v1,v2));
+
+	/*for(int i=0; i<f; i++){ //for loop for x direction
+		for(int j=0; j<f; j++){ //forloop for y direction
+			dx=(0.5+i)/f; //modify displacement for x
+			dy=(0.5+j)/f;	//modify dislacement for y
+		if((((st.x-dx)*(st.x-dx)+(st.y-dy)*(st.y-dy))<0.10*(1.0/f)*(1.0/f)) ){	//construct circle with st and radius
+			vec3 Xtan=vec3(1.0,0.0,2.0*(st.x-dx)*4.0*(f*f)); //x tangent
+			vec3 Ytan=vec3(0.0,1.0,2.0*(st.y-dy)*4.0*(f*f)); //y tangent
+			vec3 bumpedNormal=tangentToEyeMatrix*normalize(vec3(cross(Xtan,Ytan)));	
+
+		}
+	 }
+	}*/
 	//return bumpedNormal;
-}  // ToDo compute "bump mapping "normal vector
+  // ToDo compute "bump mapping "normal vector
 
 vec4 shading(vec3 P,vec3 N, gl_LightSourceParameters light,gl_MaterialParameters mat){
 		//the initialization of final color:
@@ -90,12 +103,10 @@ vec4 shading(vec3 P,vec3 N, gl_LightSourceParameters light,gl_MaterialParameters
 
 
 void main()  {
-	  // int i;
-	  	   
        gl_LightSourceParameters light = gl_LightSource[0];
        gl_MaterialParameters mat = gl_FrontMaterial; 
        vec3 bumpedNormal = N;
-       if (!disableBumpMapping) { bumpedNormal = tangentToEyeMatrix* getBumpedNormal(gl_TexCoord[0].st*frequency); }
+       if (!disableBumpMapping) { bumpedNormal = getBumpedNormal(gl_TexCoord[0].st); }
 	
        //gl_FragColor = shading(gl_TexCoord[0], bumpedNormal, light, mat);   // function from Phong shader
 	    gl_FragColor =shading(P, bumpedNormal, light, mat);	
